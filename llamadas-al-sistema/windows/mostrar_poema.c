@@ -1,21 +1,16 @@
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <string.h>
+#include <windows.h>
 #include <stdio.h>
 
 #define SIZE_BUFFER 12
 
 int
 main() {
-  int fd;
+  HFILE hFile;
   char buffer[SIZE_BUFFER + 1];
   
-  bzero(buffer, SIZE_BUFFER);
+  ZeroMemory(buffer, SIZE_BUFFER);
   
-  fd = open("../data/lope-de-vega-poema.txt", O_RDONLY);
+  hFile = OpenFile("../data/lope-de-vega-poema.txt", O_RDONLY);
 
   if (fd == -1) {
     fprintf(stderr, "Error abriendo archivo: %d\n", errno);
