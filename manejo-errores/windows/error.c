@@ -3,13 +3,18 @@
 
 void
 main(void) {
-  OFSTRUCT openFileStruct;
-  HFILE hFile = OpenFile("..\\data\\no-existe.txt", &openFileStruct, OF_READ);
+  HANDLE hFile = CreateFileA("..\\data\\no-existe.txt",
+			     GENERIC_READ,
+			     FILE_SHARE_READ,
+			     NULL,
+			     OPEN_EXISTING,
+			     FILE_ATTRIBUTE_NORMAL,
+			     NULL);
 
-  if (hFile == HFILE_ERROR) {
+  if (hFile == INVALID_HANDLE_VALUE) {
     fprintf(stderr, "Error abriendo fichero debido a %ld\n", GetLastError());
     ExitProcess(1);
   }
 
-  exit(0);
+  ExitProcess(0);
 }
