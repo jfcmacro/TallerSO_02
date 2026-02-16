@@ -305,7 +305,7 @@ Hay varias formas de volver al directorio del usuario: `cd $HOME`, `cd ~`, `cd`.
 
 ### Comandos básicos
 
-*  `head`
+* `head`
 * `cut`
 * `grep`
 * `sort`
