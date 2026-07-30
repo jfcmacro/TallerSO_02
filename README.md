@@ -1,8 +1,8 @@
-# Taller 2
+# Sistemas Operativos - Taller 2 - El mundo según C, C++, Interpretador de comandos y conceptos de sistemas operativos
 
 ## Agenda
 
-1. Preliminares
+1. Preliminares 
 2. El mundo según C, C++ y otros
 3. Llamadas al sistema
 4. Estructura de directorios
@@ -57,7 +57,239 @@ git commit -m "Iniciando el Taller 02"
 git push
 ```
 
-## El mundo según C, C++ y otros (Parte 2)
+## El mundo según C, C++ y otros
+
+Para cada ejercicio tenga en cuenta que los ejercicios están diseñados para Windows o para Linux (MacOS o WSL), en el caso de Windows abra una terminal de `msys2`, en Linux (y otros) abra una terminal que tenga el `bash` como *shell*.
+
+### Introducción
+
+Programar consiste en crear una implementación de una solución, lo suficientemente genérica para que a través de parámetros, se puede cambiar el comportamiento de dicha solución, sin tener que cambiar el código.
+
+Normalmente, esto lo observamos la declaración de funciones, que reciben parámetros que le permiten modificar consistente la solución, por ejemplo tememos una función de ordenamiento (`sort`), que además de recibir en un argumento los datos a ordenar, puede tener recibir un parámetro que representa la función de comparación. Esto parámetros, hacen que el ordenamiento se pueda hace utilizando diferentes criterios, sin tener que modificar el programa.
+
+En la programación actual, se requiere construir programas que implementen la solución más general y que a través de los parámetros se pueda cambiar su comportamiento. En el caso de los programas y los guiones, esto se puede lograr a través de los argumentos de la línea de comandos o las variables de ambiente.
+
+Vamos a ver como hacerlo a través de Linux y Windows y en el camino como aprenderlo hacerlo utilizando el lenguaje de programación C.
+
+### Línea de argumentos
+
+Un programa se convierte en un proceso cuando este es lanzada o ejecutado, en dicho momento se convierte en un **proceso**. Normalmente, lo podemos hacer a través de la interfaz gráfica dando un doble clic en icono que representa el fichero y esta asociado al ejecutable, o dicho icono representa al ejecutable mismo. 
+
+En la consola esto se hace escribiendo un comando que puede ser un comando interno del *shell* que representa una acción o este comando es el nombre de un ejecutable.
+
+El siguiente formato es la línea de argumentos, que es utilizado para lanzar un programa con los argumento que pueden cambiar el comportamiento del programa.
+
+```bash
+<comando o nombre-ejecutable> [<argumentos>]...
+```
+
+#### Linux
+
+Un programa tiene un comportamiento definido por su código, este comportamiento puede cambiar con la iteración del mundo exterior, ya sea a través de las operaciones de entrada y salida, línea de argumentos y variables de ambiente.
+
+La línea de argumentos permite pasar elementos que cambien el comportamiento de un programa, por ejemplo algunos programas puede recibir una argumento que indique el orden que van a ser ordenado los resultados. 
+
+##### [Línea de Argumentos](./argumentos/linux/argumentos.c)
+
+Se encarga de mostrar como un programa recibe argumentos del mundo exterior, a través del `shell` y mostrar cada uno de los argumentos.
+
+**Ejercicio 1**. [Compilar `argumentos.c`]. El compilador instalado es `gcc`.
+
+La siguiente líneas nos permite ejecutar dos tareas. Mover a un directorio (`cd`) y compilar un programa (`gcc`). Ejecute la siguiente líneas en la terminal:
+
+```bash
+cd argumentos/linux/
+gcc argumentos.c
+```
+
+El primero (`cd`) es un **inner command**, este es ejecutado internamente por el `shell` (`bash`), no es programa en ejecución. Este comando recibe un argumento el nombre de la ruta del directorio de trabajo (**pathname**).
+
+El segundo (`gcc`) es la ejecución de programa con un argumento `argumentos.c`, este es un programa real:
+
+```bash
+which gcc
+```
+
+Muestra la ruta donde está ubicado el ejecutable `gcc`.
+
+La ejecución anterior generar un ejecutable llamado `a.out`. Para ejecutarlo:
+
+```bash
+./a.out
+```
+
+Esto muestra que el programa recibe un solo argumento que es el nombre el programa que se esta ejecutando.
+
+Ejecute con varios argumentos:
+
+```bash
+./a.out arg1 arg2 arg3 "varios argumentos" /tmp/fichero ../fichero2
+```
+
+Así se pueden pasar varios argumentos al programa y cada argumento puede ser utilizado para definir un comando, una acción, un fichero (o ficheros), todo dependerá de la forma que el programado defina el comportamiento del comando.
+
+**Ejercicio 2.** [Dar un nombre al ejecutable]. El nombre `a.out` puede ser confuso para determinar cual es el propósito de un programa, algunos ejecutables tiene nombres que sugiere su tarea por ejemplo: `sort` un programa que ordena; `ls` listar directorios, `pwd` (Process Working Directory). Nosotros podemos nombrar los ejecutables a traves de una opción (línea de argumento del compilador).
+
+```bash
+gcc -o argumentos argumentos.c
+```
+
+Observe el fichero creado:
+
+```bash
+ls -l
+```
+
+Se ha creado un fichero llamado `argumentos`.
+
+##### [Manejo de argumentos](./argumentos/linux/manejo_argumentos.c)
+
+Los argumentos puede ser opcionales, obligatorios, tener valor. El manejo manual de la línea de argumentos puede se un poco complicado, para ello existe una biblioteca (ustedes llaman librería) que se encarga de procesar la línea de argumentos, esta es la biblioteca [`getpopt`](https://man7.org/linux/man-pages/man3/getopt.3.html).
+
+Observe que el programa es capaz de procesar dos conjuntos de argumentos:
+
+```bash
+./manejo_argumentos -h
+```
+
+Esto muestra dos conjuntos: el primero `-h` y el segundo `-c -g -p <nombre_impresora>`. Son dos conjuntos disyuntos, esto se logra a través de la programación. Ya vimos como funciona el primer conjunto. El segundo puede aceptar cero,  uno, dos o tres argumentos:
+
+```bash
+./manejo_argumento
+./manejo_argumento -c
+./manejo_argumento -c -g
+./manejo_argumento -g -c -p "impresora"
+```
+
+**Tarea 1.** "Saludo o despedida" [directorio: `ambiente/linux` fichero: "saludo.c", conjunto argumentos 1: "[-s|-d] <nombre>", conjunto argumentos 2: "-h"]. El programa `saludo` en el primer conjunto recibe un nombre y saluda a dicho nombre, si la opción `-d` esta activa se despide de la persona.
+
+[Ejecución]
+```bash
+./saludo -h
+```
+[Salida]
+```bash
+Uso: ./salida -h
+     ./salida [-s|-d] <nombre>
+```
+
+[Ejecución]
+```bash
+./saludo juan
+```
+[Salida]
+```bash
+Hola juan
+```
+
+[Ejecución]
+```bash
+./saludo -s juan
+```
+[Salida]
+```bash
+Hola juan
+```
+
+[Ejecución]
+
+```bash
+./saludo -d juan
+```
+[Salida]
+```bash
+Adios juan
+```
+
+#### Windows
+
+El comportamiento de un programa es a través de la línea de comandos.
+
+##### [Linea de Argumentos](./argumentos/windows/argumentos.c)
+
+Se encarga de mostrar como un programa recibe argumentos del mundo exterior, a través del Shell y de la línea de comandos.
+
+**Ejercicio 3**. [Compilar `argumentos.c`]. El compilador instalado es `gcc`.
+
+```bash
+cd argumentos/windows
+gcc -o argumentos argumentos.c
+```
+
+Observe el ejecutable:
+
+```bash
+ls
+```
+
+Ejecutelo:
+
+```bash
+./argumentos.exe
+```
+
+##### [Manejo de argumentos](./argumentos/windows/manejo_argumentos.c)
+
+Los argumentos puede ser opcionales o tener variables, hacerlo de manera manual es un poco complicado, vamos a utilizar una biblioteca `getpopt`.
+
+**Ejercicio 4**. [Compilar y ejecutar]. Modifique el programa para que acepte las mismas opciones que su primo en linux.
+
+**Tarea 2**: "Saludo o despedida" [directorio: `ambiente/windows` fichero: "saludo.c", conjunto argumentos 1: "[-s|-d] <nombre>", conjunto argumentos 2: "-h"]. El programa `saludo` en el primer conjunto recibe un nombre y saluda a dicho nombre, si la opción `-d` esta activa se despide de la persona.
+
+**Ejercicio 5.** ¿Por qué los programas de las **Tarea1** y **Tarea2** son idénticos, si están en sistemas operativos diferentes?
+
+### Variables de ambiente
+
+Ya vimos que las línea de comando pueden cambiar el comportamiento de un programa. Pero existe otra maneras de cambiar el comportamiento del programa a través de otro mecanismo llamado variables de ambiente. Una variable de ambiente es un para donde se tiene una clave (o nombre) y un valor para dicha clave. Estas variables de ambiente se define dentro del *shell* que lanza el programa
+
+#### Linux
+
+##### [Mostrar las variables de ambiente](./ambiente/linux/ambiente.c)
+
+**Ejercicio 6** [Compilar `ambiente.c`, ficheros: `ambiente.c` , `Makefile`] Ya hemos visto como compilar un programa de forma directa, pero esta es una tarea repetitiva. Normalmente, nosotros estamos habituados a utilizar un IDE para hace que este lo haga de forma automática. Aunque los IDEs son excelente herramientas, muchos de ellos utilizan una tecnología que permite esta compilación automática. Este es la herramienta `make`. En este punto el profesor va a introducir esta herramienta. Una vez terminada la introducción al `make` implemente su propio fichero `Makefile`  y  compile este proyecto. Y ejecute el programa, y mire las variables definidas. Utilize su AI favorita para preguntar que significa cada una de esas variables.
+
+**Ejercicio 7** [Ejecutar `ambiente`] Las variables de ambiente puede ser definidas en cualquier cualquier momento.
+
+```bash
+export VARIABLE1="Este es un valor 1"
+export VARIABLE2="Este es un valor 2"
+./ambiente
+```
+
+Defina variables de ambiente y miren como son definidas en el programa.
+
+##### [Mostrar una variable de ambiente en particular](./ambiente/linux/variable.c)
+
+**Ejercicio 8** [Compilar `variable.c`, ficheros: `variable.c`, `Makefile`]. Modifique el `Makefile` modificado en el ejercicio anterior y añada otro objetivo que compile el programa `variable.c`.
+
+**Ejercicio 9** [Definir y verificar variables de ambiente]. Defina sus propias variables de ambiente:
+
+```bash
+export MIVAR=<valor>
+```
+
+Y mire el contenido de la misma
+
+#### Windows
+
+##### [Mostrar las variables de ambiente](./ambiente/windows/ambiente.c)
+
+**Ejercicio 10** [Compilar `ambiente.c`, ficheros: `ambiente.c`, `Makefile`]. Compilar el programa `ambiente.c` por medio del `make`. Y ejecute el programa, y mire las variables definidas. Utilize su AI favorita para preguntar que significa cada una de esas variables.
+
+**Ejercicio 11** [Definir las variables]. En Windows estamos utilizando una terminal de [msys2](https://www.msys2.org/), las variables son definidas de la misma forma que en linux. En este ejercicio abramos una terminal diferente, en Windows Terminal miramos las opciones y abrimos la terminal basada en `cmd`. En ella las variables se define diferente.
+
+```bash
+%MIVAR%=<valor>
+```
+
+Defina varias variables y vean el valor definido en ellas.
+
+[Mostrar una variable de ambiente en particular](./ambiente/windows/variable.c)
+
+**Ejercicio 12** [Compilar `variable.c` ficheros: `variable.c`, `Makefile`]. Añadir al fichero `Makefile` el objetivo de compilar `variable.c`
+
+**Ejercicio 13** [Definir variables y mostralas]. El ejercicio consiste que defina variables en una terminal [msys2](https://www.msys2.org/), defina variables en una terminal `cmd`. Mire como son mostradas.
+
 
 ### Errores
 
@@ -310,7 +542,7 @@ Hay varias formas de volver al directorio del usuario: `cd $HOME`, `cd ~`, `cd`.
 * `grep`
 * `sort`
 * `uniq`
-* 
+* `man`
 
 ### Ejecución de programa
 
@@ -332,5 +564,5 @@ Hay varias formas de volver al directorio del usuario: `cd $HOME`, `cd ~`, `cd`.
 * `ps`
 * `top`
 
-### Lenguaje de programación
+
 
